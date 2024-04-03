@@ -5,17 +5,25 @@
 今日2题：
 
 875. Koko Eating Bananas
+    
     trick: use res = min(res, new_res) to keep track of the best result
 
 153. Find Minimum in Rotated Sorted Array
+    
     "write an algorithm that runs in O(log n) time" --> immediately think about Binary Search
+
+
 
 ### Apr 2, 2024
 
-Joined a leetcode-master bootcamp:
+Joined leetcode-master bootcamp:
+
 https://github.com/youngyangyang04/leetcode-master
-useful tools can be found in: https://www.yuque.com/chengxuyuancarl/wnx1np/ktwax2
-A great draft sketching tool: https://excalidraw.com/
+
+useful tools can be found in: 
+
+https://www.yuque.com/chengxuyuancarl/wnx1np/ktwax2
+
 
 
 **Tips for Debugging**
@@ -57,7 +65,6 @@ System.out.println(cnt + " " + 下标);
 //找到没有打的输出语句的前一轮次可以定位问题,因为我们的日志也打了输出语句所以你可以看到下标是多少
 ```
 
-
 4. 判断是否进入if
 ```Java
 if(){
@@ -65,7 +72,6 @@ if(){
 }
 //如果没进入在if上面打输出语句看你的变量是否正确
 ```
-
 
 5. 树递归
 ```Java
@@ -86,15 +92,11 @@ while(!q.isEmpty()){
 }
 ```
 
-![十大排序算法](https://img-blog.csdnimg.cn/img_convert/23ef50081e87c3e196818fe5f68e288b.png)
-![十大排序算法复杂度](https://img-blog.csdnimg.cn/img_convert/c7c8e681f1df85aa23d49044687cbd2e.png)
-
-
-
 
 今日2题：
 
 704. Binary Search
+    
     **一种更好的求mid的方法**
     我之前的： int mid = (left + right) / 2;
     更好的：int mid = left + ((right - left) >> 1);
@@ -106,6 +108,7 @@ while(!q.isEmpty()){
     
 
 27. Remove Element
+    
     two pointers不只是一左一右的，也可以两个都在左边起点。
 
 
