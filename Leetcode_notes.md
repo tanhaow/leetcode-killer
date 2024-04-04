@@ -112,6 +112,54 @@ while(!q.isEmpty()){
     two pointers不只是一左一右的，也可以两个都在左边起点。
 
 
+### Apr 3, 2024
+
+今日2题：
+
+977. Squares of a Sorted Array
+    
+    很简单。秒了。也是two pointers。
+    
+```Python3
+    for i in range(len(nums)):
+    nums[i] = nums[i] * nums[i]
+    // Tip: 关于square a array，下面这样写更优雅。
+    nums = [num * num for num in nums]
+```
+
+121. Best Time to Buy and Sell Stock
+
+    我的做法是先算出每天的profit变化，然后找max_profit，我的答案在memeory上优于97.5%的答案。但另一种方式更直观更简单：https://youtu.be/1pkOgXD63yU
+    
+    我原本困惑的点在于为什么prices[r] <= prices[l]就要l += 1。
+    其实很简单，当第二天没有利润的时候，说明股票跌了，那么这个时候入手，肯定比之前入手要好。所以不用担心前一天的价格还没有loop完不知道结果，因为不管怎么样从后面一天入手都更好。所以直接将左边的pointer移到现在的最低价位处，l = r。
+    
+3. Longest Substring Without Repeating Characters    
+    
+    我原本以为set()里element的顺序是随机的，但其实set()是有顺序的，dictionary里的才没有，之后不要弄混了。所以，可以用`charSet = set()`来记录char出现过的顺序。
+
+    其次，滑窗的时候要注意是用while而不是if，只要条件满足，就应该继续滑动。
+    
+    滑窗 = 用一个for循环来完成暴力解法两个for循环才能完成的事。for里循环的是r（终点位置），我们自己需要想办法移动l（起点位置）。for循环会一次一次奖终点位置向后移动，当满足条件时，我们自动起点位置，来试图更加逼近条件。
+    https://www.bilibili.com/video/BV1tZ4y1q7XE/
+    
+    `min_len = float('inf')` 这行代码在Python中的意思是将变量`min_len`初始化为无穷大。在Python中，`float('inf')`表示正无穷大，而`float('-inf')`表示负无穷大。将变量初始化为无穷大在某些算法中非常有用，特别是在需要找到最小值的情况下。
+    初始化`min_len`为无穷大的目的是为了确保在后续的比较中，任何实际的、有限的长度值都会小于`min_len`。这样，第一次比较就可以成功更新`min_len`为一个实际的长度值。这种方法常用于求最小值的问题。
+
+59. Spiral Matrix II
+    
+    four pointers: left, right, top, bottom.
+    
+    When to terminate the loop? When left cross right, top cross bottom.
+    
+    Neetcode老哥讲得太好了：https://youtu.be/RvLrWFBJ9fM
+    
+    
+
+    
+    
+    
+
 
 
 
