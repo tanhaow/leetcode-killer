@@ -155,11 +155,32 @@ while(!q.isEmpty()){
     Neetcode老哥讲得太好了：https://youtu.be/RvLrWFBJ9fM
     
     
+### Apr 23, 2024
 
-    
-    
-    
+Linked List问是否有环(loop) -> 快慢指针
+
+找环形入口： x = z
+![示意图](https://code-thinking-1253855093.file.myqcloud.com/pics/20220925103433.png)
 
 
+### Apr 24, 2024
 
+什么用哈希法？-> **当我们遇到需要判断一个元素是否出现过的场景，第一时间想到哈希法！**
+这句话很重要，大家在做哈希表题目都要思考这句话。 
+比如在202. Happy Number里，需要判断一个sum是否重复出现过，就可以使用哈希法，用一个unordered set来判断sum是否出现过。
+
+**常见的三种哈希结构：**
+当我们想使用哈希法来解决问题的时候，我们一般会选择如下三种数据结构：
+**数组
+set（集合）
+map（映射)**
+哈希法牺牲了空间换取了时间，因为我们要使用额外的数组，set或者是map来存放数据，才能实现快速的查找。
+
+**divmod(n1, n2)的用法：**
+n, r = divmod(112, 10): 
+先div(n = 112 // 10 = 11), 然后mod(r = 112 % 10 = 2)
+
+**.index(n):** 可以通过nums.index(n)来获取某一个数在List里的index。
+
+**2sum**用hashset，**3sum**和**4sum**用two pointers(l, r)，4sum就是在3sum上多套了一个loop而已。
 
