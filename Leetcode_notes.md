@@ -184,3 +184,116 @@ n, r = divmod(112, 10):
 
 **2sum**用hashset，**3sum**和**4sum**用two pointers(l, r)，4sum就是在3sum上多套了一个loop而已。
 
+
+### Apr 25, 2024
+
+今天在练习字符串，下面这个python的写法很巧妙，学习一下。
+541. Reverse String II
+```class Solution:
+    def reverseStr(self, s: str, k: int) -> str:
+        # Two pointers. Another is inside the loop.
+        p = 0
+        while p < len(s):
+            p2 = p + k
+            # Written in this could be more pythonic.
+            s = s[:p] + s[p: p2][::-1] + s[p2:]
+            p = p + 2 * k
+        return s
+```
+
+**双指针法**是字符串处理的常客。
+**双指针法的效率优势**：通过两个指针在一个for循环下完成两个for循环的工作，将O(n^2)的时间复杂度降为O(n)。
+
+其实很多数组（字符串）填充类的问题，都可以先预先给数组扩容带填充后的大小，然后在**从后向前**进行操作。
+为什么要从后向前填充，从前向后填充不行么？从前向后填充就是O(n^2)的算法了，因为每次添加元素都要将添加元素之后的所有元素向后移动。
+
+
+KMP算法是字符串查找最重要的算法。
+还剩KMP算法没看，明天起来看一下，一刷可以先不用完全搞懂。
+
+
+### Apr 26, 2024
+
+今天开始练stack和queue
+
+**232. Implement Queue using Stacks**
+用两个stack模拟queue
+
+**225. Implement Stack using Queues**
+用一个deque模拟stack
+
+有点晕。多练练。
+
+![stack vs. queue](https://web.stanford.edu/class/archive/cs/cs106b/cs106b.1206/lectures/stacks-queues/img/stacks-queues.png)
+Stack是叠起来的，LIFO，越靠后进去的越先出来。
+Queue是一队列的，FIFO，最先进去的最先出来。
+
+20. Valid Parentheses
+要注意检查stack是不是空了(if stack)，如果空了就不能pop了；并且，结束的时候如果不是空的，就说明就问题。
+
+
+1047. 删除字符串中的所有相邻重复项 
+
+Stack的经典应用。Stack很适合这种类似于消消乐的操作，因为stack帮助我们记录了，遍历数组当前元素时候，前一个元素是什么。
+
+
+
+
+**⚠️注意：int() 和 //(integer division) 不一样，在负数时是有区别的**
+int()是向0取整，//是向下取整。
+
+- `int(-13 / 5)` results in `-2` -- 向0取整
+- `-13 // 5` results in `-3` -- 向下取整
+
+正数时看似一样，但实则内在逻辑不同：
+- `13 // 5` results in `2` -- 向0取整
+- `int(13 / 5)` results in `2` -- 向下取整
+
+这么看的话，计算类的题里用int()应该更普遍。
+
+
+一道有意思的hard：
+239. Sliding Window Maximum
+如果不是两侧滑动窗口，只增加数字不减少数字的话，用一个大顶堆（优先级队列/max-heap）来存放数字，每次只能弹出最大值，就行了。但问题是，这个窗口是固定长度滑动的，每一次增加一个数字，都会减少一个数字，而大顶堆记录的是所有见到过的最大值，而不是滑动窗口里面的所有数值。
+
+这道题，我们要用到**单调队列(Monotonic Queue)**，即单调递减(non-increasing)或单调递增(non-decreasing)的队列。这个队列没有必要维护窗口里的所有元素，只需要维护有可能成为窗口里最大值的元素就可以了，同时保证队列里的元素数值是由大到小的。
+
+**pop():** 每次pop的时候，比较当前要pop的数值是否是队列前端出口的数值(也就是说我们要pop的这个值是当前记录的最大值)，如果是最大值，就说明这一步里窗口从最大值划走了，于是，把之前记录的最大值pop掉，我们需要重新找最大值了。**-> 这就解决了我们记录的是滑动窗口里面的最大值。**
+**push():** 如果push进去的数值大于后段入口元素的数值，那么就将队列后端的数值pop掉（因为我们找到比这个数更大的值了），一直pop到要push进去的数值小于等于队列入口元素的数值为止。**-> 这样就保持了队列里的数值是单调从大到小的了。
+**
+
+
+347. Top K Frequent Elements
+
+这道题有很多坑，可以多练几遍。我之前是用hash table做的，这次知道了也可以用heap(priority queue)做。
+
+**小顶堆每次将最小的元素弹出** 用于统计最大前k个元素 -> 小顶堆每次将最小的元素弹出，最后剩下的就是前k个最大元素。
+**大顶堆每次将最大的元素弹出** 用于统计最小前k个元素 -> 大顶堆每次将最大的元素弹出，最后剩下的就是前k个最小元素。
+
+Python 的 heapq 默认提供的是小顶堆，需要将优先级取负来实现最大堆。
+```
+    默认小顶堆：heapq.heappush(min_heap, (priority, task))
+    取负变成大顶堆：heapq.heappush(max_heap, (-priority, task))
+```
+Java 的 PriorityQueue 默认是小顶堆，需要自定义比较器来实现最大堆。
+```
+    默认小顶堆：PriorityQueue<Integer> minHeap = new PriorityQueue<>();
+    加反转器变成大顶堆：PriorityQueue<Integer> maxHeap = new PriorityQueue<>(Collections.reverseOrder());
+    
+    * 默认的小顶堆其实相当于：PriorityQueue<Integer> minHeap = new PriorityQueue<>(Integer::compareTo);
+    Integer::compareTo是按照自然升序（由小到大）来排序的
+
+```
+
+C++ 的 priority_queue 默认是大顶堆，需要自定义比较器来实现最小堆。
+```
+    默认大顶堆：priority_queue<int> maxHeap;
+    priority_queue<int, vector<int>, greater<int>> minHeap;
+    
+    * 默认的小顶堆相当于：priority_queue<int, vector<int>, less<int>> minHeap;
+    只不过less被默认省略去了
+```
+
+std::priority_queue<int, std::vector<int>, std::greater<int>> minHeap;
+
+
