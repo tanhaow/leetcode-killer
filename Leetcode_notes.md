@@ -234,7 +234,7 @@ Queue是一队列的，FIFO，最先进去的最先出来。
 
 1047. 删除字符串中的所有相邻重复项 
 
-Stack的经典应用。Stack很适合这种类似于消消乐的操作，因为stack帮助我们记录了，遍历数组当前元素时候，前一个元素是什么。
+Stack的经典应用。Stack很适合这种类似于消消乐的操作（匹配问题都是栈的强项！），因为stack帮助我们记录了，遍历数组当前元素时候，前一个元素是什么。
 
 
 
@@ -292,8 +292,291 @@ C++ 的 priority_queue 默认是大顶堆，需要自定义比较器来实现最
     
     * 默认的小顶堆相当于：priority_queue<int, vector<int>, less<int>> minHeap;
     只不过less被默认省略去了
+    
+    - int：这是队列中存储的元素的类型。在这个例子中，队列将存储整数。
+    - vector<int>：这是底层容器类型，用于实际存储队列中的数据。priority_queue 可以使用任何提供随机访问迭代器和支持 back(), push_back(), 和 pop_back() 操作的容器类型。vector 是最常用的容器类型，但也可以使用deque。
+    - less<int>：这是一个比较类或函数，用于确定元素的排序方式。less<int> 即元素较大者具有更高的优先级，因此实际上是一个最大堆。
 ```
 
 std::priority_queue<int, std::vector<int>, std::greater<int>> minHeap;
 
+
+### Apr 26, 2024
+
+今天开始二叉树啦哈哈哈！
+
+**平衡二叉搜索树 AVL(Adelson-Velsky and Landis)**
+它是一棵空树，或它的左右两个子树的高度差的绝对值不超过1，
+并且，左右两个子树都是一棵平衡二叉树。
+![](https://code-thinking-1253855093.file.myqcloud.com/pics/20200806190511967.png)
+
+C++中map、set、multimap，multiset的底层实现都是平衡二叉搜索树，所以map、set的增删操作时间时间复杂度是logn，注意我这里没有说unordered_map、unordered_set，unordered_map、unordered_set底层实现是哈希表。
+
+
+### **二叉树的储存**
+二叉树可以链式存储(用指针)，也可以顺序存储(用数组)。
+用链式表示的二叉树，更有利于我们理解，所以一般是用链式存储二叉树。但是要了解，用数组依然可以表示二叉树。
+如果是用数组来存储二叉树（如下图），应该如果遍历呢？
+![](https://code-thinking-1253855093.file.myqcloud.com/pics/20200920200429452.png)
+**数组二叉树：如果父节点的数组下标是 i，那么它的左孩子就是 i * 2 + 1，右孩子就是 i * 2 + 2。**
+
+
+### **如何定义一棵二叉树？**
+在刷leetcode的时候，节点的定义都默认定义好了，但真到面试的时候，面试官可能要求手写代码，需要自己写节点定义的时候，当心一脸懵逼！所以一定要用白纸练习，自己记住并写下来。
+
+C++:
+
+```C
+struct TreeNode {
+    int val;
+    TreeNode *left;
+    TreeNode *right;
+
+    // 初始化节点的方式1: 无参构造函数
+    TreeNode() : val(0), left(nullptr), right(nullptr) {}
+    // 初始化节点的方式2: 单参数构造函数
+    TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+    // 初始化节点的方式3: 三参数构造函数
+    TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+};
+
+```
+Java:
+```Java
+public class TreeNode {
+    int val;
+    TreeNode left;
+    TreeNode right;
+    
+    // 在Java中，一个class/struct可以定义多个构造函数，就像在C++中一样
+    // 初始化节点的方式1: 无参构造函数
+    TreeNode() {}
+    // 初始化节点的方式2: 单参数构造函数
+    TreeNode(int val) { this.val = val; }
+    // 初始化节点的方式3: 三参数构造函数
+    TreeNode(int val, TreeNode left, TreeNode right) {
+        this.val = val;
+        this.left = left;
+        this.right = right;
+    }
+}
+```
+
+Python:
+```Python
+class TreeNode:
+    # 在Python中，class的构造函数是通过定义__init__方法来实现的。
+    # __init__方法接受了三个默认参数值 (val, left, right)
+    # 得益于此，只需要一个__init__方法就能涵盖多种初始化场景，使得创建树节点时非常灵活。
+    def __init__(self, val, left = None, right = None):
+        self.val = val
+        self.left = left
+        self.right = right
+```
+
+
+### **二叉树的遍历方式**
+
+二叉树主要有两种遍历方式：
+广度优先遍历(BFS)：一层一层的去遍历。
+深度优先遍历(DFS)：先往深走，遇到叶子节点再往回走。
+
+在深度优先遍历(DFS)中，又有三个顺序:前、中、后序遍历。
+记住前中后序指的就是中间节点的位置顺序就可以了。
+**前序**遍历：**中**左右
+**中序**遍历：左**中**右
+**后序**遍历：左右**中**
+![](https://code-thinking-1253855093.file.myqcloud.com/pics/20200806191109896.png)
+
+那么，遍历二叉树需要使用什么**数据结构**呢？这里就又是一个**stack和queue**的应用场景。
+**DFS -> stack**
+DFS里的前中后序遍历的逻辑可以借助stack使用递归的方式来实现，因为栈其实就是递归的一种实现结构。(这里没懂，接下来再看)
+**BFS -> queue**
+而BFS的实现一般使用queue来实现，因为需要先进先出(FIFO)的结构，才能一层一层地来遍历二叉树。
+
+
+### **二叉树的递归遍历**
+
+写递归，不能靠玄学，应该按照以下三个要素来写，可以保证写出正确的递归算法！
+1. 确定每一轮递归中：需要处理什么参数 -> 在递归函数里加上这个参数
+                  & 需要返回什么值 -> 确定递归函数的返回类型。
+2. 确定递归的终止条件： 写完了递归算法, 运行的时候，经常会遇到stack溢出的错误，就是没写终止条件或者终止条件写的不对，操作系统也是用一个stack的结构来保存每一层递归的信息，如果递归没有终止，操作系统的内存stack必然就会溢出。
+3. 确定单层递归的逻辑： 确定在每一层递归里，需要怎么样去处理的参数。
+
+```C
+class Solution {
+public:
+
+    // 在C++和Java中, Class里的所有方法都会在编译时被收集，
+    // 所以可以在一个Class的任何位置调用同一个Class里的其他方法，
+    // 而不用担心方法定义的先后顺序。
+    vector<int> preorderTraversal(TreeNode* root) {
+        vector<int> result;
+        traversal(root, result);
+        return result;
+    }
+
+    // 确定递归函数的参数(current node和存放val的vector)和返回值(void)
+    void traversal(TreeNode* cur, vector<int>& vec) {
+        // 确定终止条件
+        if (cur == NULL) return;
+        // 确定单层递归的逻辑
+        vec.push_back(cur->val);    // 中（处理参数）
+        traversal(cur->left, vec);  // 左
+        traversal(cur->right, vec); // 右
+    }
+};
+
+```
+
+```Java
+class Solution {
+
+    public List<Integer> preorderTraversal(TreeNode root) {
+        List<Integer> res = new ArrayList<Integer>();
+        traversal(root, res);
+        return res;
+    }
+    
+    public void traversal(TreeNode currNode, List<Integer>res) {
+        if currNode == null {
+            return;
+        }
+        res.add(currNode.val);
+        traversal(currNode.left, res);
+        traversal(currNode.right, res);
+    }
+}
+```
+
+```python
+class Solution:    
+    def preorderTraversal(self, root: TreeNode) -> List[int]:
+        res = []
+        
+        # 确定递归函数的参数和返回值
+        def traversal(current_node):
+            # 确定终止条件
+            if current_node is None:
+                return
+            # 确定单层递归的逻辑
+            res.append(current_node.val) # 中
+            traversal(current_node.left)       # 左
+            traversal(current_node.right)      # 右
+        
+        # 在Python中，必须先定义函数后使用，
+        # 因为Python是动态解释执行的语言，它在运行时逐行解释代码，对顺序敏感。
+        traversal(root)
+        return res
+```
+
+
+
+### **递归与迭代**
+**迭代 (Iteration)**
+想象你在爬楼梯，你知道每一步都要做什么：提脚、向上走一阶。你重复这个过程，一步接一步，直到到达楼梯顶端。这就是迭代：重复一个动作或步骤，每次都是一样的，直到完成任务。
+**递归 (Recursion)**
+想象你在组装一套俄罗斯套娃。你打开最大的娃娃，里面还有一个稍小的娃娃。你接着打开这个小娃娃，里面又有一个更小的，以此类推，直到最小的那个娃娃（**“递”**）。然后你开始一个个地把小娃娃装回大娃娃里，直到全部装完（**“归”**）。递归就是这样：开始一个任务，发现你可以通过做一个更小的、类似的任务来完成它，这个小任务又需要完成一个更小的任务，直到达到最简单的形式，然后你开始逐步传递返回去，直到整个大任务完成。
+迭代像是一步步走楼梯走到楼顶，而递归像是解开一层层套在一起的套娃再装回去！
+
+
+### **用迭代法遍历二叉树（使用stack）**
+
+**前序遍历（用stack访问&处理）**
+先前已经讲到，前序遍历是中左右，每次先处理的是中间节点。
+因此，我们先将root放进stack里，然后将right child加入stack，再加入left child。
+为什么要先加入right，再加入left呢？ 因为stack是先入后出(FILO)，right要比left先进栈，出栈的时候才能比left后出栈（中->左->右）
+
+**后序遍历（用stack访问&处理）**
+迭代法的后序遍历的方法非常巧妙！后序遍历是左右中。
+刚刚前序遍历是中左右，反转一下result的话是右左中 
+-> 也就是说，稍微改一下前序遍历，交换左右节点的顺序，把它变成中右左，然后再反转，就是左右中啦！！！
+
+**中序遍历（用pointer访问+用stack处理）**
+迭代法的中序遍历比较tricky。上面的前序和后序的代码不能和中序通用。
+这是因为，在迭代的过程中，我们其实有两个操作：1）访问节点 2）处理节点
+在前序遍历（中左右）和后序遍历（反转前，即中右左）里，我们先访问的是中间节点，然后处理的也是中间节点，——要访问的元素和要处理的元素顺序是一致的。
+然而，在中序遍历（左-中-右）里，我们在访问了中间节点后(root)，并不直接处理中间节点，而是一层一层向下访问，直到达到树左面的最底部，然后才开始处理节点（左）。因此，中序遍历里，处理顺序并不和访问顺序一致。
+因此，用迭代法写二叉树的中序遍历时，我们不用stack来访问节点，只用stack来处理节点，而另外加一个指针遍历来访问节点。
+
+C++：
+```C
+class Solution {
+public:
+    vector<int> inorderTraversal(TreeNode* root) {
+        vector<int> result;
+        stack<TreeNode*> stack;
+        TreeNode* current_node = root; // 创建一个指针用于访问节点
+        while (current_node != NULL || !stack.empty()) {
+            if (current_node != NULL) {
+                stack.push(current_node);
+                current_node = current_node->left; // 左
+            } else {    // 当指针访问到了最底层 -> 可以开始处理stack里的节点了！
+                current_node = stack.top();
+                stack.pop();
+                result.push_back(cur->val);     // 中
+                cur = cur->right;               // 右
+            }
+        }
+        return result;
+    }
+};
+```
+python的好懂一些：
+```python
+class Solution:
+    def inorderTraversal(self, root: TreeNode) -> List[int]:
+        if not root:
+            return []
+        stack = []  # 不能提前将root结点加入stack中（因为root是中不是左）
+        result = []
+        cur = root  # 指针
+        while cur or stack: # 当还有没处理过的节点时（没访问、访问了还没处理）：
+            if cur:     # 如果还有没访问过的节点，继续访问
+                stack.append(cur)
+                cur = cur.left		
+            else:		# 访问完了，开始处理stack里的节点了
+                cur = stack.pop()
+                result.append(cur.val)
+                cur = cur.right	
+        return result
+```
+
+那有没有什么办法，能让前序、中序、后序的迭代一致一点呢？？请看⬇️：
+
+### **二叉树的统一迭代法**
+有点复杂，详情请见[二叉树的统一迭代法](https://programmercarl.com/%25E4%25BA%258C%25E5%258F%2589%25E6%25A0%2591%25E7%259A%2584%25E7%25BB%259F%25E4%25B8%2580%25E8%25BF%25AD%25E4%25BB%25A3%25E6%25B3%2595.html#%25E5%2585%25B6%25E4%25BB%2596%25E8%25AF%25AD%25E8%25A8%2580%25E7%2589%2588%25E6%259C%25AC)
+画出树来跟着走一遍好懂很多。复习时再画一次。第一次刷题可以暂时放过。
+
+### 二叉树的层序遍历（BFS）
+很简单，就是要注意一个corner case：当root为None时，马上return。
+if not root:
+    return [] 
+否则root被加进queue之后，queue=[None]，queue不为空，会进入遍历循环！
+**[] is empty.
+[None] is not empty!!!**
+
+
+199.二叉树的右视图
+给定一棵二叉树，想象自己站在它的右侧，按照从顶部到底部的顺序，返回从右侧所能看到的节点值。
+思路：层序遍历的时候，判断是否遍历到单层的最后面的元素，如果是，就放进result数组中，随后返回result就可以了！
+
+**extend()和append（）**
+**append()**: queue.append([1, 2, 3]) -> the entire list [1, 2, 3] is added as one element to the queue -> queue = [[1, 2, 3]]
+**extend()**: queue.extend([1, 2, 3]) -> it adds 1, 2, and 3 as separate elements to the queue -> queue = [1, 2, 3]
+
+116.填充每个节点的下一个右侧节点指针
+技巧：用**prev_node**记录前一个节点，然后在遍历的时候让前一个节点指向本节点就可以了！
+
+一口气打完了以下十题哈哈！
+102.二叉树的层序遍历(opens new window)
+107.二叉树的层次遍历II(opens new window)
+199.二叉树的右视图(opens new window)
+637.二叉树的层平均值(opens new window)
+429.N叉树的层序遍历(opens new window)
+515.在每个树行中找最大值(opens new window)
+116.填充每个节点的下一个右侧节点指针(opens new window)
+117.填充每个节点的下一个右侧节点指针II(opens new window)
+104.二叉树的最大深度(opens new window)
+111.二叉树的最小深度
 
