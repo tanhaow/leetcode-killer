@@ -584,3 +584,71 @@ if not root:
 104.二叉树的最大深度(opens new window)
 111.二叉树的最小深度
 
+
+
+### May 04, 2024
+
+今天来学求二叉树的最大深度！
+
+倒着想，从叶节点往上去想，那就不是深度，而是根节点的高度！
+
+求深度是从上到下去查 所以是前序遍历（中左右）
+求高度是从下到上去查，所以是后序遍历（左右中）
+
+用后序遍历（左-右-中）来计算树的高度
+
+还是用递归三部曲来思考：
+1. 确定递归函数的参数和返回值：参数就是传入树的根节点，返回就返回这棵树的深度，所以返回值为int类型。
+    ```
+    int getdepth(TreeNode* node)
+    ```
+2. 确定终止条件：如果为空节点的话，就返回0，表示当前高度为0。
+    ```
+    if (node == NULL) return 0;
+    ```
+3. 确定单层递归的逻辑：先求它的左子树的深度，再求右子树的深度，最后取左右深度最大的数值 再+1 （加1是因为算上当前中间节点）就是目前节点为根节点的树的深度/高度。
+    ```
+    int leftdepth = getdepth(node->left);       // 左
+    int rightdepth = getdepth(node->right);     // 右
+    int depth = 1 + max(leftdepth, rightdepth); // 中
+    return depth;
+    ```
+上手练了这三道，感觉很好！    
+104. Maximum Depth of Binary Tree
+https://leetcode.com/problems/maximum-depth-of-binary-tree/description/
+559. Maximum Depth of N-ary Tree
+https://leetcode.com/problems/maximum-depth-of-n-ary-tree/description/
+111. Minimum Depth of Binary Tree
+https://leetcode.com/problems/minimum-depth-of-binary-tree/description/   
+ 
+
+**完全二叉树**
+完全二叉树：
+除了最底层的节点可能没填满外，其余每层都填满了节点
+并且最下面一层的节点都集中在该层的最左边。
+若最底层为第 h 层，则该层包含 1 ～ 2^(h-1)  个节点。
+![](assets/17148394553554.jpg)
+222. Count Complete Tree Nodes 这道题很有意思
+https://leetcode.com/problems/count-complete-tree-nodes/description/
+完全二叉树只有两种情况，情况一：就是满二叉树，情况二：最后一层叶子节点没有满。
+对于情况一，可以直接用 2^树深度 - 1 来计算，注意这里根节点深度为1。
+对于情况二，分别递归左孩子，和右孩子，递归到某一深度一定会有左孩子或者右孩子为满二叉树，然后依然可以按照情况1来计算。
+
+```python
+class Solution: # 利用完全二叉树特性
+    def countNodes(self, root: TreeNode) -> int:
+        if not root: return 0
+        count = 1
+        left = root.left; right = root.right
+        while left and right:
+            count+=1
+            left = left.left; right = right.right
+        if not left and not right: # 如果同时到底说明是满二叉树，反之则不是
+            return 2**count-1 # 直接计算节点数，不用层层递归了
+        # 否则，说明不是满二叉树，不能直接计算，按老方法递归
+        return 1+self.countNodes(root.left)+self.countNodes(root.right) 
+```
+
+
+**平衡二叉树**
+分别求出其左右子树的高度（求高度用后序遍历：左右中），然后左右子树高度差值小于等于1，返回当前二叉树的高度，否则返回-1，表示已经不是二叉平衡树了。
