@@ -208,7 +208,7 @@ n, r = divmod(112, 10):
 为什么要从后向前填充，从前向后填充不行么？从前向后填充就是O(n^2)的算法了，因为每次添加元素都要将添加元素之后的所有元素向后移动。
 
 
-KMP算法是字符串查找最重要的算法。
+**KMP算法**是字符串查找最重要的算法。
 还剩KMP算法没看，明天起来看一下，一刷可以先不用完全搞懂。
 
 
@@ -586,6 +586,7 @@ if not root:
 
 
 
+
 ### May 04, 2024
 
 今天来学求二叉树的最大深度！
@@ -663,3 +664,54 @@ https://programmercarl.com/0257.%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E6%89%80%E6
 404. 左叶子之和
 判断一个树的左叶子节点之和，那么一定要传入树的根节点，递归函数的返回值为数值之和，所以为int。因此，使用题目中给出的函数就可以了。
 -> 也就是说，需不需要再写一个新函数，是根据原本提供的函数能不能满足要求来看的，如果原本的满足，就不需要！
+
+### May 06, 2024
+
+**递归函数什么时候需要返回值？什么时候不需要返回值？**
+总结如下三点：
+1. 如果需要搜索整棵二叉树且不用处理递归返回值，递归函数就不要返回值。（这种情况就是本文下半部分介绍的113.路径总和ii）
+2. 如果需要搜索整棵二叉树且需要处理递归返回值，递归函数就需要返回值。 （这种情况我们在236. 二叉树的236.最近公共祖先中介绍）
+3. 如果要搜索其中一条符合条件的路径，那么递归一定需要返回值，因为遇到符合条件的路径了就要及时返回。（112.路径总和i）
+
+236.找二叉树的最近公共祖先：
+遇到这个题目首先想的是要是能自底向上查找就好了，这样就可以找到公共祖先了。
+那么二叉树如何可以自底向上查找呢？答案是：回溯啊，二叉树回溯的过程就是从低到上。
+**后序遍历（左右中）就是天然的回溯过程，可以根据左右子树的返回值，来处理中节点的逻辑。**
+
+
+
+
+## 岛屿问题
+
+```python
+
+class Solution:
+    # 把这块土地上下左右的土地都标记成visited过的土地
+    def bfs(self, grid: List[List[str]], visited: List[List[str]], x, y):
+        direction = [(0, 1), (1, 0), (0, -1), (-1, 0)]
+        queue = deque([(x, y)])
+        visited[x][y] = True
+        while queue:
+            curx, cury = queue.popleft()
+            for dx, dy in direction:
+                nextx, nexty = curx + dx, cury + dy
+                if nextx < 0 or nextx >= len(grid) or nexty < 0 or nexty >= len(grid[0]):
+                    continue
+                if not visited[nextx][nexty] and grid[nextx][nexty] == "1":
+                    queue.append((nextx, nexty))
+                visited[nextx][nexty] = True
+                
+
+    def numIslands(self, grid: List[List[str]]) -> int:
+        m, n = len(grid), len(grid[0])
+        visited = [[False] * n for _ in range(m)]
+        count = 0
+        # 这个循环用于寻找“第一块土地”
+        for i in range(m):
+            for j in range(n):
+                if (visited[i][j] == False) and (grid[i][j] == "1"):
+                    count += 1
+                    self.bfs(grid, visited, i, j)
+        return count
+
+```
