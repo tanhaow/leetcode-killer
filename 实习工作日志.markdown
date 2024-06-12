@@ -1,0 +1,32 @@
+# 工作日志
+
+### 六月11日 周二
+1. 申请公司内网（找mac地址；注册国内邮箱 tanhao7633@163.com），装tfs系统⌛️
+2. 发送照片申请门卡 ✅
+3. 跟川波老师meeting，规划实习任务和计划（审批系统开发）✅
+4. 其他注意事项：不要迟到（早上8点半-9点，晚上5点半-6点），带丝徽穿正装，午休11点半-1点 ✅
+
+知识点：
+- 工具：Postman, DBeaver, PostgreSQL
+- tomcat：web-application container；Restful request；F5: load balance & fault tolerence; 
+- Redis，像RAM一样快，但是又不会一关机就丢失。将所有数据保存在内存中，因而读写操作非常快速。虽然数据存储在内存中，但Redis也支持数据持久化，将数据定期保存到磁盘（快照备份），以防数据丢失。
+- message queue（消息中间件，作用是削峰填谷）: 1. kafka 2. RabbitMQ 3, RocketMQ
+- xxlJob：定时任务
+- 瀑布式开发：需求 设计 开发 测试 验收
+- 敏捷开发agile development
+
+#### 公司的社交媒体服务平台，后端的微服务microservice有: sjmt, smdp, smsp, agent.
+1) sjmt （社交媒体缩写）：基础服务类  提供对接公众号、小程序、企业微信、抖音的基础服务
+包括接收回调消息
+2) smsp（也是中文缩写）：业务类服务,小程序端、企业微信H5等
+3) smdp：针对社媒配置平台的服务，纯内网服务
+4) agent：前台应用层，将接口转调到sjmt、smsp服务
+之后我要写的审批内容主要在smdp里面。
+
+
+### 六月12日 周三
+1. 公司内账号已激活，等待安装“小绿点”网络安全保护。⌛️
+2. 
+
+
+
