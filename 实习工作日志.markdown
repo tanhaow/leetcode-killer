@@ -12,7 +12,7 @@
 - Redis，像RAM一样快，但是又不会一关机就丢失。将所有数据保存在内存中，因而读写操作非常快速。虽然数据存储在内存中，但Redis也支持数据持久化，将数据定期保存到磁盘（快照备份），以防数据丢失。
 - message queue（消息中间件，作用是削峰填谷）: 1. kafka 2. RabbitMQ 3, RocketMQ
 - xxlJob：定时任务
-- 瀑布式开发：需求 设计 开发 测试 验收
+- 瀑布式开发：需求 - 设计 - 开发 - 测试 - 验收
 - 敏捷开发agile development
 
 #### 公司的社交媒体服务平台，后端的微服务microservice有: sjmt, smdp, smsp, agent.
@@ -26,7 +26,26 @@
 
 ### 六月12日 周三
 1. 公司内账号已激活，等待安装“小绿点”网络安全保护。⌛️
-2. 
+2. 通过telnet + ip地址的形式去查是否有墙，联系安全部门开墙。✅
+3. 开测试系统权限，开通理赔合作伙伴这个测试专用企微账号 ✅
+4. 连接DBeaver远程数据库，等待开墙⌛️
+5. IDEA配置（SDK 1.8，最稳定）
 
 
+### 六月13日 周四
+1. 回家后记得自己装一下max上的telnet ⌛️
+2. DBeaver墙已开，但连接显示“服务器不支援SSL连线”，问题待解决 ⌛️
+3. IDE里代码显示“Could not autowired. No beans of 'xxx' type found”报错，这其实是因为老版Intellij不能识别Spring Boot的annotation导致的，在不修改代码的情况下，从内网下载了较新版本的Intellij 2022 community edition，报错问题已解决。
+4. 了解了审批程序的结构，使用的是双向链表，在分叉节点点击添加节点会一次添加三个节点（审批条件、审批人、抄送人）
+我负责导出这一块
+
+网页上按F12，看Network和Console
+Tip: 在IntelliJ里双击shift可以全局搜索
+list.for 快速遍历
+
+api时接口，接前端传回的信息
+dao是数据mapper
+service里是业务逻辑
+vo存放映射对象，fields字段
+po
 
