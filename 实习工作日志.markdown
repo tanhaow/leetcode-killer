@@ -1,21 +1,93 @@
 # 工作日志
 
-### 六月11日 周二
+### 第一周 6.11-6.14
+
+#### 六月11日 周二
 1. 申请公司内网（找mac地址；注册国内邮箱 tanhao7633@163.com），装tfs系统 ✅
 2. 发送照片申请门卡 ✅
 3. 跟川波老师meeting，规划实习任务和计划（审批系统开发）✅
 4. 其他注意事项：不要迟到（早上8点半-9点，晚上5点半-6点），带丝徽穿正装，午休11点半-1点 ✅
 
-**知识点：**
-- 工具：Postman, DBeaver, PostgreSQL
-- tomcat：web-application container；Restful request；F5: load balance & fault tolerence; 
-- Redis，像RAM一样快，但是又不会一关机就丢失。将所有数据保存在内存中，因而读写操作非常快速。虽然数据存储在内存中，但Redis也支持数据持久化，将数据定期保存到磁盘（快照备份），以防数据丢失。
-- message queue（消息中间件，作用是削峰填谷）: 1. kafka 2. RabbitMQ 3, RocketMQ
-- xxlJob：定时任务
-- 瀑布式开发：需求 - 设计 - 开发 - 测试 - 验收
-- 敏捷开发agile development
+#### 六月12日 周三
+1. 公司内账号已激活，等待安装“小绿点”网络安全保护。✅
+2. 通过telnet + ip地址的形式去查是否有墙，联系安全部门开墙。✅
+3. 开测试系统权限，开通理赔合作伙伴这个测试专用企微账号 ✅
+4. 连接DBeaver远程数据库，等待开墙 ✅
+5. IDEA配置（SDK 1.8，最稳定）✅
 
-#### 公司的社交媒体服务平台，后端的微服务microservice有: sjmt, smdp, smsp, agent.
+#### 六月13日 周四
+1. DBeaver墙已开，但连接显示“服务器不支援SSL连线”，问题待解决 ✅
+2. IDE里代码显示“Could not autowired. No beans of 'xxx' type found”报错，这其实是因为老版Intellij不能识别Spring Boot的annotation导致的，在不修改代码的情况下，从内网下载了较新版本的Intellij 2022 community edition，报错问题已解决。✅
+3. 跟天成和李龙泰老师了解了审批程序的结构：使用的是双向链表，在分叉节点点击添加节点会一次添加三个节点（审批条件、审批人、抄送人）。我之后会负责新增一个审批模版导出功能。✅
+4. 听川波老师开会，学习了一些管理学上的经验，例如：当一个周五due的任务被分配给组员时，应该提前在周二周三就询问对方是否有把握在周五做好，而不是周四周五再去催 ✅
+
+#### 六月14日 周五
+1. 上午在参加2024德勤数字化挑战赛决赛 ✅
+3. 已解决Beaver“服务器不支援SSL连线”的问题，是因为需要更换一个离线驱动 ✅
+4. 写工作周报 ✅
+5. 写新入职电脑配置指南 ✅
+
+### 第二周 6.17-6.21
+
+#### 六月17日 周一
+1. 开始写导出模块的代码，学习怎么用apache的XSSFWorkbook库来把数据导出成Excel ✅
+2. 实际上手了用PostMan来测试端口，学会了怎么用PostMan debug（cURL，body）✅
+3. 企业微信没法传输图片和文件，待解决 ⌛️
+4. 回家后记得自己装一下mac上的telnet ⌛️
+5. 导出模块已经可以成功下载成Excel文件了，还存在bug需要修 ✅
+6. 导出Excel可参考项目里的：src/main/java/com/picc/smdp/report/api/ActivationReport23Api.java ✅
+
+#### 六月18日 周二
+1. 修改了导出模块的bug，已完成导出模块的后端 ✅
+2. 学习了怎么前后端共同测试 ✅
+3. 整理到目前为止学习到的知识点 ✅
+4. 好用的VUE元素模版：Element Plus ✅
+5. 学习Nginx服务器 ⌛️
+
+
+
+
+-----------------------------------------------
+
+# 知识点汇总
+
+### RESTful Request
+**REST**(Representational State Transfer)是一种web app的架构风格，其主要特点是“无状态(Stateless)”。
+**RESTful请求**是指利用标准的HTTP方法(GET, POST, PUT等)和统一的接口(Uniform Interface)来访问和操作资源的请求。
+**资源**可以是任何实体，比如用户、订单、产品，可以有多种表现形式(Representation)，比如JSON、XML、HTML，每个资源都有一个唯一的URI(Uniform Resource Identifier，统一资源标识符)。
+**无状态(Stateless)**: 无状态，用人话来讲就是，每个请求都是独立的，服务器不保留任何来自客户端的会话信息。换句话说，服务器处理每个请求时，不依赖之前的任何请求信息。这也就意味着，每个请求必须包含所有必要的信息，否侧服务器将没法处理这个请求。
+**无状态协议也有好处，好处是：** 
+1）因为每个请求都是独立的，所以服务器不需要去追踪每个客户的的会话状态，无需会话管理，减少了复杂性。
+2）因为每个请求都是独立的，任何服务器实例都可以处理请求，有利于负载均衡(Load Balancing)。
+3）因为每个请求不依赖之前的任何请求信息，当发生网络中断时，无状态请求可以在网络恢复后继续正常工作。
+4）因为相同的请求总是产生相同的响应，所以无状态请求更容易缓存，提高了性能。
+
+---
+
+### 瀑布式开发和敏捷开发
+
+**瀑布式开发(Waterfull Development):** 按照线性顺序阶段式进行，像瀑布的水流一样，从一级流下到下一级。阶段简记：需求 -> 设计 -> 开发 -> 测试 -> 验收
+1. 需求分析(Requirement Analysis): 收集所有的用户需求，分析整理成需求文档(Requirements Document)。
+2. 系统设计(System Design): 根据需求文档进行系统设计，确定系统架构、模块划分和接口设计(System Architecture, Module Division, & Interface Design)。
+3. 实现(Implementation)
+4. 测试(Testing)
+5. 部署(Deployment)
+6. 维护(Maintenance)
+  
+**敏捷开发(Agile Development):** 将项目划分为若干个迭代(Iteration)，每个迭代通常持续2-4周，每个迭代都包含瀑布式开发里提到的阶段：需求 -> 设计 -> 开发 -> 测试 -> 验收。
+
+| 对比           | 瀑布式开发               | 敏捷开发                       |
+|---------------|-------------------------|------------------------------|
+| 方法论         | 线性、顺序                | 迭代、增量                     |
+| 需求处理       | 需求在项目开始时固定        | 需求不断变化，灵活调整           |
+| 用户参与       | 用户在项目末期验收时参与     | 用户在整个开发过程中持续参与      |
+| 项目计划       | 详细的前期规划和设计        | 短期迭代计划，逐步完善           |
+| 交付方式       | 项目结束时一次性交付        | 每个迭代结束时交付可运行的软件版本 |
+| 风险管理       | 项目后期发现问题，风险高     | 早期发现并解决问题，风险低       |
+
+---
+
+### 公司社交媒体服务平台，后端的微服务(microservice): sjmt, smdp, smsp, agent
 1) sjmt （社交媒体缩写）：基础服务类  提供对接公众号、小程序、企业微信、抖音的基础服务
 包括接收回调消息
 2) smsp（也是中文缩写）：业务类服务,小程序端、企业微信H5等
@@ -23,40 +95,27 @@
 4) agent：前台应用层，将接口转调到sjmt、smsp服务
 之后我要写的审批内容主要在smdp里面。
 
+---
 
-### 六月12日 周三
-1. 公司内账号已激活，等待安装“小绿点”网络安全保护。✅
-2. 通过telnet + ip地址的形式去查是否有墙，联系安全部门开墙。✅
-3. 开测试系统权限，开通理赔合作伙伴这个测试专用企微账号 ✅
-4. 连接DBeaver远程数据库，等待开墙⌛️
-5. IDEA配置（SDK 1.8，最稳定）✅
+### Java项目里常见的功能模块
+1. API接口层：里面包含有各种控制器Controller，接收前端传回的HTTP请求，将请求传给Service业务层处理，再将处理结果返回给客户端。一般用VO来传递数据。
+2. Service业务层：核心，处理业务逻辑，调用DAO层进行数据操作，返回处理结果。一般用VO来传数据。
+3. DAO数据访问层(Data Access Object)：负责操作数据库，执行CURD操作(Create, Update, Read, Delete)，将数据库中的数据以PO对象传回给Service层。我们现在这个Spring project里用的是MyBatis的Mapper接口来跑SQL操作数据库。
+4. PO持久化对象(presistent object)：与数据库结构一一对应，用于DAO层和数据库之间的交互。用ORM（如JPA、Hibernate）进行数据映射。一般是通过数据库事务来操作，以确保数据的一致性和完整性。
+5. VO值对象(value object)：是可以读取的值，用于在API层和Service层之间传数据。VO不需要与数据库结构严格对应，可以根据业务需求灵活定义。
 
+**MIME传输类型**
+在API接口里，服务器会用MIME类型字段来告诉客户端需要接收的文件类型是什么
+用准确的MIME类型会更安全，防止混淆攻击。
+常见MIME类型列表参见：https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
 
-### 六月13日 周四
-1. DBeaver墙已开，但连接显示“服务器不支援SSL连线”，问题待解决 ⌛️
-2. IDE里代码显示“Could not autowired. No beans of 'xxx' type found”报错，这其实是因为老版Intellij不能识别Spring Boot的annotation导致的，在不修改代码的情况下，从内网下载了较新版本的Intellij 2022 community edition，报错问题已解决。✅
-3. 跟天成和李龙泰老师了解了审批程序的结构：使用的是双向链表，在分叉节点点击添加节点会一次添加三个节点（审批条件、审批人、抄送人）。我之后会负责新增一个审批模版导出功能。✅
-4. 听川波老师开会，学习了一些管理学上的经验，例如：当一个周五due的任务被分配给组员时，应该提前在周二周三就询问对方是否有把握在周五做好，而不是周四周五再去催。
+---
 
-**小Tip：**
-1. 网页上按F12，通过查看Network和Console来获知前端传回了什么信息。
-2. 在IntelliJ里双击shift可以全局搜索。
-3. 输入list.for可以快速生成遍历。
-
-
-### Java项目里常见的功能模块：
-1. api是接口层，文件夹里面有各种控制器Controller，接前端传回的请求，将请求发给service业务逻辑层处理。
-2. service是业务逻辑层，是后端的核心，连接controller和dao。
-3. dao层(Data Access Object)负责操作数据库，里面定义了对数据表的CRUD操作。我们现在这个Spring project里用的是MyBatis的Mapper接口来跑SQL操作数据库。
-4. po是presistent object，与数据库结构一一对应，用ORM（如JPA、Hibernate）进行数据映射。po一般通过数据库事务来操作，确保数据的一致性和完整性。
-5. vo是value object，是可以读取的值，用于在不同层之间传递数据。vo不需要与数据库结构严格对应，可以根据业务需求灵活定义。
-
-### 数据库事务(Database Transaction)
+### 数据库事务 (Database Transaction)
 项目里可以看到如下代码，这些其实就是数据库事务操作指令。
-
-TransactionStatus ts = DbTransaction.begin();（**开始事务**）
-DbTransaction.commit(ts);（**提交事务**）
-DbTransaction.rollBack(ts);（**回滚事务**：一般放在try-catch的catch exception里，事务有失败的操作就全部回滚）
+`TransactionStatus ts = DbTransaction.begin();` **开始事务**
+`DbTransaction.commit(ts);` **提交事务**
+`DbTransaction.rollBack(ts);` **回滚事务** (一般放在try-catch的catch exception里，事务有失败的操作就全部回滚)
 
 数据库事务具有以下四个重要属性（**ACID**）：
 1. **Atomicity 原子性**：一个transaction里的操作要么全部成功，要么全部失败。其中一个失败，全部已经执行了的操作都要回滚（rollback）到事务开始前的状态。
@@ -64,82 +123,54 @@ DbTransaction.rollBack(ts);（**回滚事务**：一般放在try-catch的catch e
 3. **Isolation 隔离性**：在一个事务未提交之前，其他事务不能看到其中间状态。不同事务之间的操作互不干扰，仿佛他们是按照顺序执行的。
 4. **Durability 持久性**：一但一个事务提交成功了，它改变的数据就会永久保存在数据库中，及时系统崩溃也不会丢失。
 
+---
 
-### 六月14日 周五
-1. 上午在参加2024德勤数字化挑战赛决赛 ✅
-2. 回家后记得自己装一下mac上的telnet ⌛️
-3. D解决Beaver“服务器不支援SSL连线”的问题。是因为需要更换一个驱动。✅
-4. 写工作周报 ✅
-5. 写新入职电脑配置指南 ✅
-
-
-
-### 六月17日 周一
-1. 开始写导出模块的代码，学习怎么用apache的XSSFWorkbook库来把数据导出成Excel ✅
-2. 实际上手了用PostMan来测试端口，学会了怎么用PostMan debug（cURL，body）✅
-3. 企业微信没法传输图片和文件，待解决 ⌛️
-4. 回家后记得自己装一下mac上的telnet ⌛️
-5. 导出模块已经可以成功下载成Excel文件了，还存在bug需要修 ✅
-
-
-导出Excel可参考：src/main/java/com/picc/smdp/report/api/ActivationReport23Api.java
+### 如何在Java里导出Excel表格
+可用Apache的XSSFWorkbook或者HSSFWorkbook库：
+`import org.apache.poi.xssf.usermodel.XSSFWorkbook;`
+`import org.apache.poi.hssf.usermodel.HSSFWorkbook;`
 
 XSSFWorkbook和HSSFWorkbook的区别：
 **`HSSFWorkbook`**：用于操作 Excel 97-2003 文件（.xls 格式）。
 **`XSSFWorkbook`**：用于操作 Excel 2007 及以上版本文件（.xlsx 格式）。
 
-**导出模块的业务逻辑：**
-**后端**：使用 `XSSFWorkbook` 创建 Excel 文件，并将其转换为 Base64 编码的字符串返回给前端。
-*注意：不能只导出当前页面的，所有满足条件的工单都需要导出。*
-**前端**：发送请求到后端获取 Base64 编码的 Excel 文件字符串，将其转换为可下载的文件，并触发下载。
+**Excel格式化日期**
+如果看到一串中间以点分割8位数（如45440.47289），这是Excel的时间日期格式，需要SimpleDateFormat和CellStyle来正确格式化日期，以避免显示为一串数字。
 
-cURL = command URL
+---
+
+## 小Tip
+1. 网页上按F12，通过查看Network和Console来获知前端传回了什么信息。
+2. 在IntelliJ里双击shift可以全局搜索。
+3. 输入list.for可以快速生成遍历。
 
 
 
-```html
-<template>
-  <div>
-    <button @click="downloadExcel">导出工单历史记录</button>
-  </div>
-</template>
+## 其他
 
-<script>
-import axios from 'axios';
+#### Redis
+Redis是一种高性能的内存数据库，它的读写速度像RAM一样快，但又不像RAM一样一关机就丢失。
+因为它有着**数据持久化**的功能，这个功能是通过 **定期将数据保存到磁盘(快照备份)** 或者 **记录每个写入操作(AOF日志)** 的方式来实现的。
 
-export default {
-  name: 'ExportButton',
-  methods: {
-    async downloadExcel() {
-      try {
-	// 发送请求到后端获取Base64编码的Excel文件字符串
-        const response = await axios.post('/ManagementService/exportWorkFormList', {
-          corpid: 'yourCorpid',
-          work_id: 'yourWorkId',
-          template_name: 'yourTemplateName',
-          work_status: 'yourWorkStatus',
-          pageindex: 1,
-          pagesize: 100
-        }, {
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        });
-        // 获取后端传回的Base64编码的Excel文件字符串
-        const base64Data = response.data.data;
-        // 创建一个隐藏的link，用于触发文件下载
-        const link = document.createElement('a');
-        // 将Base64的Excel字符串转换为提供文件下载的data URL
-        link.href = 'data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,' + base64Data;
-        // 设置下载文件的名称
-        link.download = 'file_name.xlsx';
-        // 触发下载操作
-        link.click();
-      } catch (error) {
-        console.error('导出失败', error);
-      }
-    }
-  }
-};
-</script>
-```
+#### F5方案
+F5 Networks是一家位于西雅图的应用交付网络（ADN, Application Delivery Network）公司，取名自龙卷风的最高风速等级F5。其利用服务器负载均衡(load balance)、容错(fault tolerence)、压缩页面等网络优化方式，确保用户的业务应用能够快速、安全、可靠地交付给内部员工和外部服务群，保证企业业务的可靠性、可用性与安全性。
+
+#### 消息中间件 message queue
+相当于一个水库，作用是**削峰填谷**，可以在不同程序发送和接收之间的时间差里保存信息。通过异步处理，让系统可以同时处理多个任务，提高整体效率。并且，消息中间件可以把消息保存起来，防止系统崩溃式消息丢失，提高可靠性。常用的消息中间件有kafka，RabbitMQ，RocketMQ。
+
+#### Tomcat：web-application container
+Tomcat是Apache开发的一个开源的Java Servlet容器，用于运行Java web-app。
+web-app并不必须要有容器，但是使用容器可以让开发和部署更加高效可靠，减少代码工作量，所以通常都会用Tomcat或者Jetty这样的容器。
+
+#### XXL-JOB 任务调度平台
+用户可以用XXL-JOB设置**定时任务**，比如每天凌晨执行数据库备份，定期清理过期的日志文件，每天早上发送汇报邮件给相关人员，每小时执行数据同步任务将数据从一个系统同步到另一个系统等。
+
+#### URL和cURL
+**URL**(Uniform Resource Locator)只是网络资源的地址。
+**cURL**(Client for URL)是一个工具库，不仅包含了URL，还包含了各种HTTP请求（GET, POST, PUT, DELETE等），并且允许灵活设置各种请求参数（header, body），可以传递JSON数据，完全重现特定的请求，所以在测试API时非常有用。
+
+---
+
+
+
+
