@@ -68,5 +68,78 @@ DbTransaction.rollBack(ts);（**回滚事务**：一般放在try-catch的catch e
 ### 六月14日 周五
 1. 上午在参加2024德勤数字化挑战赛决赛 ✅
 2. 回家后记得自己装一下mac上的telnet ⌛️
-3. DBeaver“服务器不支援SSL连线”的问题仍然待解决 ⌛️
-4. 写工作周报
+3. D解决Beaver“服务器不支援SSL连线”的问题。是因为需要更换一个驱动。✅
+4. 写工作周报 ✅
+5. 写新入职电脑配置指南 ✅
+
+
+
+### 六月17日 周一
+1. 开始写导出模块的代码，学习怎么用apache的XSSFWorkbook库来把数据导出成Excel ✅
+2. 实际上手了用PostMan来测试端口，学会了怎么用PostMan debug（cURL，body）✅
+3. 企业微信没法传输图片和文件，待解决 ⌛️
+4. 回家后记得自己装一下mac上的telnet ⌛️
+5. 导出模块已经可以成功下载成Excel文件了，还存在bug需要修 ✅
+
+
+导出Excel可参考：src/main/java/com/picc/smdp/report/api/ActivationReport23Api.java
+
+XSSFWorkbook和HSSFWorkbook的区别：
+**`HSSFWorkbook`**：用于操作 Excel 97-2003 文件（.xls 格式）。
+**`XSSFWorkbook`**：用于操作 Excel 2007 及以上版本文件（.xlsx 格式）。
+
+**导出模块的业务逻辑：**
+**后端**：使用 `XSSFWorkbook` 创建 Excel 文件，并将其转换为 Base64 编码的字符串返回给前端。
+*注意：不能只导出当前页面的，所有满足条件的工单都需要导出。*
+**前端**：发送请求到后端获取 Base64 编码的 Excel 文件字符串，将其转换为可下载的文件，并触发下载。
+
+cURL = command URL
+
+
+
+```html
+<template>
+  <div>
+    <button @click="downloadExcel">导出工单历史记录</button>
+  </div>
+</template>
+
+<script>
+import axios from 'axios';
+
+export default {
+  name: 'ExportButton',
+  methods: {
+    async downloadExcel() {
+      try {
+	// 发送请求到后端获取Base64编码的Excel文件字符串
+        const response = await axios.post('/ManagementService/exportWorkFormList', {
+          corpid: 'yourCorpid',
+          work_id: 'yourWorkId',
+          template_name: 'yourTemplateName',
+          work_status: 'yourWorkStatus',
+          pageindex: 1,
+          pagesize: 100
+        }, {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        // 获取后端传回的Base64编码的Excel文件字符串
+        const base64Data = response.data.data;
+        // 创建一个隐藏的link，用于触发文件下载
+        const link = document.createElement('a');
+        // 将Base64的Excel字符串转换为提供文件下载的data URL
+        link.href = 'data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,' + base64Data;
+        // 设置下载文件的名称
+        link.download = 'file_name.xlsx';
+        // 触发下载操作
+        link.click();
+      } catch (error) {
+        console.error('导出失败', error);
+      }
+    }
+  }
+};
+</script>
+```
