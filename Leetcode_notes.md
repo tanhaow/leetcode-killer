@@ -845,3 +845,10 @@ void backtracking(参数) {
 而`path.pop()` 则是直接在原地修改列表，从而正确地进行回溯操作。
 
 
+### June 19, 2024
+回溯基本做完了，开始做贪心了！
+
+122. 买卖股票的最佳时机II  
+很巧妙，只需要考虑day profit是不是正数，是的话加进总利润就好。
+
+在python里，如果需要修改数组里的值，必须用for i in range(len(nums))，不能用for num in nums。如果只需要取值，可以用后者。
