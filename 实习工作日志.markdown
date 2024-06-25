@@ -3,11 +3,7 @@
 ### 第一周 6.11-6.14
 
 #### 六月11日 周二
-<<<<<<< HEAD
 1. 申请公司内网（找mac地址；注册国内邮箱tanhao7633@163.com），装tfs系统 ✅
-=======
-1. 申请公司内网（找mac地址；注册国内邮箱 tanhao7633@163.com），装tfs系统 ✅
->>>>>>> parent of 2e9a755 (Update 实习工作日志.markdown)
 2. 发送照片申请门卡 ✅
 3. 跟川波老师meeting，规划实习任务和计划（审批系统开发）✅
 4. 其他注意事项：不要迟到（早上8点半-9点，晚上5点半-6点），带丝徽穿正装，午休11点半-1点 ✅
@@ -37,7 +33,7 @@
 1. 开始写导出模块的代码，学习怎么用apache的XSSFWorkbook库来把数据导出成Excel ✅
 2. 实际上手了用PostMan来测试端口，学会了怎么用PostMan debug（cURL，body）✅
 3. 企业微信没法传输图片和文件，待解决 ⌛️
-4. 回家后记得自己装一下mac上的telnet ⌛️
+4. 回家后记得自己装一下mac上的telnet ✅
 5. 导出模块已经可以成功下载成Excel文件了，还存在bug需要修 ✅
 6. 导出Excel可参考项目里的：src/main/java/com/picc/smdp/report/api/ActivationReport23Api.java ✅
 
@@ -48,7 +44,440 @@
 4. 好用的VUE元素模版：Element Plus ✅
 5. 学习Nginx服务器 ⌛️
 
+#### 六月19日 周三
+1. 刷了7道力扣，把回溯刷完了，开始刷贪心算法了 ✅
+2. 领取了新任务：在提交记录列表中新增详情按钮，点击详情按钮进入当前工单详情页面 ⌛️
+3. 导出模块的状态一栏需要修， 一共有6个状态，现在只有6个 ⌛️
 
+
+#### 六月20日 周四
+1. 继续完成工单详情 ⌛️
+2. 修一个导出功能的bug：如果工单未办结，办结时间一栏应当直接显示“未办结”，而非办结时间 ⌛️
+3. 导出Excel里的状态一栏里添加审批人和准确的节点状态 ⛔️[搁置]
+4. Git revert到老版本再重新合并到新版本这个操作还是没太学会，最后手动复制粘贴解决的。之后有空再实操看看 ✅
+
+
+#### 六月21日 周五
+1. 工单未办结，办结时间一栏应当直接显示“未办结”的bug修好了 ✅
+2. 完成了PC端的工单详情: getWorkForm(获取工单申请详情), getWorkFormHistory(获取工单历史详情(审批流程线)) ✅
+3. 工单详情get username还有一点小bug，下周来修⌛️
+
+
+### 第三周 6.24-6.29
+
+#### 六月24日 周一
+1. 通过将`userid`和`username`存储在一个Map中，修复了getWorkFormHistory某些情况下获取不到用户名的问题 ✅
+2. 增加工单回收功能 ⌛️
+3. 学习Spring Boot拦截器 ✅
+
+
+#### 六月25日 周二
+1. 同步企业微信接口，增加模版导入功能
+2. 增加一个模版审核节点
+3. 个人信息脱敏，正则表达式 & 机器学习
+
+
+
+
+
+JMeter
+
+**限制流量**：
+   - 使用拦截器限制每秒请求数量。
+   - 在配置文件中设置上传和下载的文件大小限制。
+
+### 1. 限制流量
+
+在Spring Boot中，我们可以通过以下几种方式来限制流量，确保服务器安全：
+
+#### 1.1 使用 Spring Boot 拦截器限制实例数量
+
+**拦截器-Interceptor**是一种在处理请求之前、处理请求之后、视图渲染之前执行自定义逻辑的机制。我们可以使用拦截器来限制实例数量。假设我们希望每个用户在一定时间内只能发起一定数量的请求。
+
+**步骤：**
+
+1. **创建一个拦截器类**，例如 `RateLimitInterceptor`，用来实现流量限制逻辑。
+
+2. **注册拦截器**，将拦截器添加到 Spring Boot 的拦截器链中。
+
+
+**创建 `RateLimitInterceptor` Class**
+
+```java
+import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.HandlerInterceptor;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
+
+@Component
+public class RateLimitInterceptor implements HandlerInterceptor {
+    private static final int MAX_REQUESTS_PER_SECOND = 5; // 每秒最大请求数
+    private ConcurrentHashMap<String, AtomicInteger> userRequestCounts = new ConcurrentHashMap<>();
+
+    @Override
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        String userIp = request.getRemoteAddr();
+        userRequestCounts.putIfAbsent(userIp, new AtomicInteger(0));
+        AtomicInteger requestCount = userRequestCounts.get(userIp);
+
+        if (requestCount.incrementAndGet() > MAX_REQUESTS_PER_SECOND) {
+            response.setStatus(HttpServletResponse.SC_TOO_MANY_REQUESTS);
+            response.getWriter().write("Too many requests");
+            return false;
+        }
+
+        // 重置计数器的任务，每秒执行一次
+        new java.util.Timer().schedule(new java.util.TimerTask() {
+            @Override
+            public void run() {
+                requestCount.set(0);
+            }
+        }, 1000);
+
+        return true;
+    }
+}
+```
+**注册拦截器**
+
+在 `WebMvcConfig` 类中注册拦截器：
+
+```java
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+@Configuration
+public class WebMvcConfig implements WebMvcConfigurer {
+
+    @Autowired
+    private RateLimitInterceptor rateLimitInterceptor;
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(rateLimitInterceptor).addPathPatterns("/**");
+    }
+}
+```
+
+#### 1.2 对下载和上传分别限速
+
+可以通过设置 Spring Boot 的配置属性来限制文件上传和下载的大小。
+如果需要更细粒度的控制，可以使用第三方库如 `Bucket4j` 实现复杂的限速策略。
+
+在 `application.properties` 中配置最大上传文件大小：
+
+```properties
+spring.servlet.multipart.max-file-size=10MB
+spring.servlet.multipart.max-request-size=10MB
+```
+
+
+
+### 增加工单回收功能
+
+工单回收功能可以让用户在一定时间后将未处理的工单回收。
+我们可以使用 Spring 的定时任务来实现。
+使用定时任务定期检查和回收过期的工单。
+
+**步骤：**
+
+1. **创建一个定时任务 WorkOrderCleanupTask Class**，用来定期检查和回收过期的工单。
+
+```java
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+import java.time.LocalDateTime;
+
+@Component
+public class WorkOrderCleanupTask {
+
+    @Scheduled(fixedRate = 3600000) // 每小时执行一次
+    public void cleanUpOldWorkOrders() {
+        // 假设我们有一个 WorkOrderRepository 来处理工单的数据库操作
+        List<WorkOrder> oldWorkOrders = workOrderRepository.findOldWorkOrders(LocalDateTime.now().minusDays(7));
+
+        for (WorkOrder workOrder : oldWorkOrders) {
+            workOrder.setStatus("recycled");
+            workOrderRepository.save(workOrder);
+        }
+
+        System.out.println("Old work orders cleaned up at " + LocalDateTime.now());
+    }
+}
+```
+
+2. **启用定时任务**
+
+在主应用程序类上添加 `@EnableScheduling` 注解：
+
+```java
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
+
+@SpringBootApplication
+@EnableScheduling
+public class Application {
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class, args);
+    }
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+当前工单节点信息表：svr_work_form
+处理历史记录表：svr_work_form_history
+当前模版下，满足条件的所有节点：svr_work_form_optional
+
+
+
+修改工单状态展示效果
+1—	待受理（申请提交工单完成，等待审批人受理）
+2—	审批中（审批人受理工单，还未进行审批）
+3—	审批通过
+4—	审批不通过
+5—	已过期（审批期限内，未完成审批）
+6—	办结（审批完成后，申请人点击评价并进行办结，无评价工单无需此状态）
+
+
+
+Task: 增加工单回收功能
+发起人、审批人都可以回收工单
+抄送人不能回收工单，但工单被回收后，已经发送到抄送人处的工单也应当被撤回
+
+思路：查询该工单在谁名下，如果还未开始受理，则可以撤回工单。要小心发送给多人审批的情况，需要检查是否已经有其他人开始受理了。
+
+限制服务器流量：
+Spring boot拦截器，设置原子单位500个，满了就不能再提交了
+下载：限制带宽，但要注意有些浏览器对大文件必须下载到1k才能继续下载，如果限速太多，没下载到1k就超时了。
+上传：比较复杂。可以考虑设置单独的session，当一个session传太多，就关闭当前session。这在小程序中行得通，但pc端会有问题。
+
+
+
+新增需求：导出模块在状态一列中需要增加信息，当前导出的“状态”一列只显示“已办结”“待办理”等状态，需要读取数据库，获取当前节点的处理人究竟是谁，加入到状态一列中。
+
+新增逻辑：
+1. 从svr_work_form获取到这个工单的当前节点的类型（node_type, 比如"approval", "apply", "notify"），如果是审批节点(approval)（能在svr_work_form表里的其实都是审批节点），则获取这个节点的：
+    - 节点id(node_id)
+    - 对应的工单id(work_id)
+    - 当前这个节点的办理状态(node_status)
+    - 整个工单的办理状态(work_status)
+    - 当前节点的签字类型（sign_type）
+    - 当前节点处理人的人名和id(node_username, node_userid)
+    - 这个工单所有的处理人的名字list和id list(userid_list_name, userid_list)
+2. 判断当前整个工单的办理状态，如果整个**工单已经办理完成**(work_status==2)，那么直接显示“工单已办结”。
+3. **Else**: 判断当前节点的状态(node_status): 0-待受理 1-已受理 2-已审批 3-已驳回
+4. 如果是：
+    1) node_status==0 **节点待受理**：找到userid_list_name储存的这个工单的所有处理人列表(如"李龙泰,李晨阳,梁天成"，或者"谭好")，再找到sign_type(0-或签 1-会签 2-依次审批)，显示“处理人名+签字类型+待受理”，如“工单处理中：李龙泰,李晨阳,梁天成会签待受理”。
+    1) node_status==1 **节点已受理**：根据node_id在svr_work_form里找到当前节点的处理人名称(node_username)，显示“工单处理中：处理人名+签字类型+已受理”，如“谭好会签已受理”。
+    2) node_status==2 **节点已审批**：要注意，这里有多种情况，需要首先判断当前节点的签字类型(sign_type): 0-或签 1-会签 2-依次审批
+        - 如果sign_type==0，说明是**或签**。经过测试发现只要当前节点一处理完毕，如果是最后一个node，那么工单work_status就会变成2，会直接已完结，如果不是最后一个node，当前节点就会自动变成下一个节点，node_status重新变成0，所以不会出现或签时node_status==2的情况。
+        - 如果sign_type==1，说明是**会签**。如果当前处理人的id(node_userid)并不是该工单的所有处理人列表(userid_list)中的最后一位，说明他后面还有处理人，找到他后面的一位处理人的名字，显示“工单处理中：下一位处理人的名字+签字类型+待受理”。如果他是最后一位，那么当前节点也会自动变成下一个节点，不用处理这种情况。
+        - 如果sign_type==2，说明是**依次审批**。如果当前处理人的id(node_userid)并不是该工单的所有处理人列表(userid_list)中的最后一位，说明他后面还有处理人，找到他后面的一位处理人的名字，显示“工单处理中：下一位处理人的名字+签字类型+待受理”。如果他是最后一位，那么当前节点也会自动变成下一个节点，不用处理这种情况。
+    
+        
+    
+
+
+```java
+@Override
+public ApiResponse exportWorkFormList(String corpid, String work_id, String template_name, String work_status, HttpServletResponse response) {
+
+    List<WorkFormVo> list;
+    Workbook workbook = new XSSFWorkbook();
+
+    try {
+        // 调用exportWorkFormList接口导出所有工单数据
+        list = rWorkTemplateMapper.exportWorkFormList(corpid, work_id, template_name, work_status);
+
+        // 创建 Excel Sheet
+        Sheet sheet = workbook.createSheet("WorkFormList");
+
+        // 设置列宽
+        sheet.setColumnWidth(0, 28 * 256);
+        sheet.setColumnWidth(1, 33 * 256);
+        sheet.setColumnWidth(2, 21 * 256);
+        sheet.setColumnWidth(3, 21 * 256);
+        sheet.setColumnWidth(4, 8 * 256);
+        sheet.setColumnWidth(5, 40 * 256);  // 状态列需要更多空间
+
+        // 创建标题行
+        Row header = sheet.createRow(0);
+        // 设置标题行样式
+        CellStyle headerStyle = workbook.createCellStyle();
+        Font font = workbook.createFont();
+        font.setBold(true);
+        headerStyle.setFont(font);
+        // 填充标题行内容
+        String[] headers = {"模版名称", "工单编号", "提交时间", "办结时间", "申请人", "状态"};
+        for (int i = 0; i < headers.length; i++) {
+            Cell cell = header.createCell(i);
+            cell.setCellValue(headers[i]);
+            cell.setCellStyle(headerStyle);
+        }
+
+        // 设置日期格式
+        CreationHelper createHelper = workbook.getCreationHelper();
+        CellStyle dateCellStyle = workbook.createCellStyle();
+        dateCellStyle.setDataFormat(createHelper.createDataFormat().getFormat("yyyy-MM-dd HH:mm:ss"));
+
+        // 填充数据行
+        int rowNum = 1;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        for (WorkFormVo workForm : list) {
+            Row row = sheet.createRow(rowNum++);
+            // 模版名称
+            row.createCell(0).setCellValue(workForm.getTemplate_name());
+            // 工单编号
+            row.createCell(1).setCellValue(workForm.getTemplate_id());
+            // 提交时间
+            Cell applyTimeCell = row.createCell(2);
+            applyTimeCell.setCellValue(sdf.format(workForm.getApply_time()));
+            applyTimeCell.setCellStyle(dateCellStyle);
+            // 办结时间
+            Cell finishTimeCell = row.createCell(3);
+            if (workForm.getFinish_time() != null) {
+                finishTimeCell.setCellValue(sdf.format(workForm.getFinish_time()));
+            }
+            finishTimeCell.setCellStyle(dateCellStyle);
+            // 申请人
+            row.createCell(4).setCellValue(workForm.getApply_username());
+
+            // 办理状态
+            String statusText = getStatusText(workForm);
+            row.createCell(5).setCellValue(statusText);
+        }
+
+        // 设置响应内容的类型和header信息
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        String encodedFileName = URLEncoder.encode("审批工单历史记录.xlsx", "UTF-8");
+        response.setHeader("Content-Disposition", "attachment; filename*=UTF-8''" + encodedFileName);
+
+        // 将工作簿写入响应流，然后关闭
+        workbook.write(response.getOutputStream());
+        workbook.close();
+
+        log.info("[WorkTemplateService][exportWorkFormList] 文件已导出");
+
+    } catch (Exception e) {
+        log.info("[WorkTemplateService][exportWorkFormList]exception:{}", LogExceptionJson.excToJson(e));
+        return new ApiResponse(
+                SmspCode.SMP_DATABASE_SELECT_FAIL.status,
+                SmspCode.SMP_DATABASE_SELECT_FAIL.statusText,
+                e
+        );
+    }
+    return null;
+}
+
+/**
+ * 根据工单信息获取状态文本
+ */
+private String getStatusText(WorkFormVo workForm) {
+    String workStatus = workForm.getWork_status();
+    if ("2".equals(workStatus)) {
+        return "工单已办结";
+    }
+
+    String nodeStatus = workForm.getNode_status();
+    String nodeType = workForm.getNode_type();
+    String signType = workForm.getSign_type();
+    String nodeUsername = workForm.getNode_username();
+    List<String> useridListName = JSON.parseArray(workForm.getUserid_list_name(), String.class);
+
+    String statusText = "工单处理中：";
+    if ("0".equals(nodeStatus)) {
+        statusText += String.join(",", useridListName);
+        if ("0".equals(signType)) {
+            statusText += "或签待受理";
+        } else if ("1".equals(signType)) {
+            statusText += "会签待受理";
+        } else {
+            statusText += "依次审批待受理";
+        }
+    } else if ("1".equals(nodeStatus)) {
+        statusText += nodeUsername;
+        if ("0".equals(signType)) {
+            statusText += "或签已受理";
+        } else if ("1".equals(signType)) {
+            statusText += "会签已受理";
+        } else {
+            statusText += "依次审批已受理";
+        }
+    } else if ("2".equals(nodeStatus)) {
+        int currentIndex = useridListName.indexOf(nodeUsername);
+        if ("1".equals(signType) || "2".equals(signType)) {
+            if (currentIndex < useridListName.size() - 1) {
+                String nextUser = useridListName.get(currentIndex + 1);
+                statusText += nextUser + "待受理";
+            }
+        }
+    }
+    return statusText;
+}
+```
+
+```
+    
+    
+    
+
+```java
+@Select("<script>" +
+        "select t.work_id," +
+        "t.template_id," +
+        "t.template_name," +
+        "t2.template_icon," +
+        "t.apply_userid," +
+        "t.apply_username," +
+        "t.work_status," +
+        "t.node_status," +
+        "t.node_userid," +
+        "t.node_username," +
+        "t.node_accept_time," +
+        "t.node_handle_time," +
+        "t.insert_time_for_his as apply_time," +
+        "t.operate_time_for_his as finish_time," +
+        "t.node_type," +
+        "t.sign_type," +
+        "t.userid_list_name " +
+        "from svr_work_form t " +
+        "left join svr_work_template t2 on t.corpid = t2.corpid and t.template_id = t2.template_id " +
+        "where t.corpid = #{corpid} " +
+        "<if test=\"work_id != null and work_id !=''\">and t.work_id = #{work_id} </if>" +
+        "<if test=\"template_name !=null and template_name !=''\">and t.template_name like concat('%',#{template_name},'%') </if>" +
+        "<if test=\"work_status != null and work_status !=''\">and t.work_status = #{work_status} </if>" +
+        "order by t.insert_time_for_his desc " +
+        "</script>")
+List<WorkFormVo> exportWorkFormList(@Param("corpid") String corpid, @Param("work_id") String work_id, @Param("template_name") String template_name,
+                                    @Param("work_status") String work_status);
+```
 
 
 -----------------------------------------------
@@ -147,6 +576,7 @@ XSSFWorkbook和HSSFWorkbook的区别：
 1. 网页上按F12，通过查看Network和Console来获知前端传回了什么信息。
 2. 在IntelliJ里双击shift可以全局搜索。
 3. 输入list.for可以快速生成遍历。
+4. control + option + command + I 可以自动缩进对齐代码
 
 
 
